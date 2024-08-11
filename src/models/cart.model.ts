@@ -3,7 +3,12 @@ import { Schema, model, Document, Types } from "mongoose";
 // Define the CartProduct interface
 interface CartProduct {
   productId: string;
+  productName: string;
   quantity: number;
+  productPrices: Array<{
+    brandName: string;
+    price: number;
+  }>;
 }
 
 // Define the Cart interface extending Mongoose's Document
@@ -47,6 +52,18 @@ const cartSchema = new Schema<Cart>({
         required: true,
         default: 1,
       },
+      productPrices: [
+        {
+          brandName: {
+            type: String,
+            required: true,
+          },
+          price: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
     },
   ],
 });
