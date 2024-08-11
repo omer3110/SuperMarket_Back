@@ -1,14 +1,11 @@
 import { Request, Response } from "express";
 import CartModel from "../models/cart.model";
 import UserModel from "../models/user.model";
-
-// Extend the Express Request interface within this file
-interface CustomRequest extends Request {
-  userId?: string;
-}
+import { AuthRequest } from "../types/auth.types";
+import { getErrorData } from "../utils/errors/ErrorsFunctions";
 
 // Controller to create a new cart
-export const createCart = async (req: CustomRequest, res: Response) => {
+export const createCart = async (req: AuthRequest, res: Response) => {
   const { name, cartProducts, collaborators } = req.body;
 
   try {
@@ -22,13 +19,14 @@ export const createCart = async (req: CustomRequest, res: Response) => {
     await newCart.save();
 
     res.status(201).json(newCart);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
 // Controller to add collaborators to an existing cart
-export const addCollaborator = async (req: CustomRequest, res: Response) => {
+export const addCollaborator = async (req: AuthRequest, res: Response) => {
   const { cartId } = req.params;
   const { collaboratorUsername } = req.body;
 
@@ -54,18 +52,20 @@ export const addCollaborator = async (req: CustomRequest, res: Response) => {
     await cart.save();
 
     res.json(cart);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
 // Controller to get all carts of a user
-export const getUserCarts = async (req: CustomRequest, res: Response) => {
+export const getUserCarts = async (req: AuthRequest, res: Response) => {
   try {
     const carts = await CartModel.find({ userId: req.userId });
     res.json(carts);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
@@ -80,13 +80,14 @@ export const getCartById = async (req: Request, res: Response) => {
     }
 
     res.json(cart);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
 // Controller to update a cart
-export const updateCart = async (req: CustomRequest, res: Response) => {
+export const updateCart = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const { name, cartProducts, collaborators } = req.body;
 
@@ -104,13 +105,14 @@ export const updateCart = async (req: CustomRequest, res: Response) => {
     await cart.save();
 
     res.json(cart);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
 // Controller to delete a cart
-export const deleteCart = async (req: CustomRequest, res: Response) => {
+export const deleteCart = async (req: AuthRequest, res: Response) => {
   const { cartId } = req.params;
 
   try {
@@ -120,7 +122,8 @@ export const deleteCart = async (req: CustomRequest, res: Response) => {
     }
 
     res.json({ message: "Cart deleted successfully" });
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };

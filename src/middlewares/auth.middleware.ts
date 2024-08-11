@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import Cart from "../models/cart.model";
-
-// Define the payload interface for JWT
-interface JwtPayload {
-  userId: string;
-}
+import { getErrorData } from "../utils/errors/ErrorsFunctions";
 
 // Extract JWT_SECRET from environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -67,8 +63,9 @@ export const authorizeCartOwner = async (
     }
 
     next();
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    res.status(500).json({ message: errorMessage });
   }
 };
 
