@@ -556,7 +556,7 @@ export const PRODUCTS = [
     prices: [
       { brandName: "Shufersal", price: 37.9 },
       { brandName: "Yohananof", price: 32.9 },
-      { brandName: "Rami Levy", price: -1 },
+      { brandName: "Rami Levy", price: 30 },
     ],
   },
   {
@@ -566,7 +566,7 @@ export const PRODUCTS = [
     prices: [
       { brandName: "Shufersal", price: 37.5 },
       { brandName: "Yohananof", price: 32.9 },
-      { brandName: "Rami Levy", price: -1 },
+      { brandName: "Rami Levy", price: 25 },
     ],
   },
   {
