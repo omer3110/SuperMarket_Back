@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 dotenv.config(); // Load env vars
 
 async function connectDB(): Promise<void> {
-  console.log("MONGO_URI =", process.env.MONGO_URI);
-
   try {
     await mongoose.connect(process.env.MONGO_URI as string);
     console.log("MongoDB connected");

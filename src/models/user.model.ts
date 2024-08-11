@@ -2,13 +2,14 @@ import { Schema, model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
 
 // Define the CartProduct interface
-interface CartProduct {
+export interface CartProduct {
   productId: string;
   quantity: number;
 }
 
 // Define the User interface extending Mongoose's Document
 interface User extends Document {
+  _id: Types.ObjectId;
   firstName: string;
   lastName: string;
   email: string;

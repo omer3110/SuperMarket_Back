@@ -42,11 +42,11 @@ export const register = async (req: Request, res: Response) => {
 
 // Controller to handle user login
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body; // Accept username and password from the request body
 
   try {
-    // Find the user by email
-    const user = await UserModel.findOne({ email });
+    // Find the user by username
+    const user = await UserModel.findOne({ username });
     if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }

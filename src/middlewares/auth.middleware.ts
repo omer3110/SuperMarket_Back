@@ -12,9 +12,17 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 
 // Middleware to verify the JWT token
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const authHeader =
-    req.headers["Authorization"] || req.headers["authorization"]; // Get the authorization header
-  const token = authHeader && authHeader.split(" ")[1]; // Get the token from the header
+  // Get the authorization header (it could be a string or an array of strings)
+  const authHeader = req.headers["authorization"] as
+    | string
+    | string[]
+    | undefined;
+
+  // Ensure authHeader is a string before calling split
+  const token =
+    authHeader && typeof authHeader === "string"
+      ? authHeader.split(" ")[1]
+      : null;
 
   if (!token) {
     console.log("auth.middleware, verifyToken. No token provided");
@@ -40,12 +48,16 @@ export const authorizeCartOwner = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { id } = req.params; // Assuming the cart ID is passed as a route parameter
+  const { cartId } = req.params; // Extract cartId from the route parameters
 
   try {
-    const cart = await Cart.findById(id);
+    const cart = await Cart.findById(cartId); // Use cartId here
     if (!cart) {
-      return res.status(404).json({ message: `Cart with id ${id} not found` });
+      console.log(cartId);
+
+      return res
+        .status(404)
+        .json({ message: `Cart with id ${cartId} not found` });
     }
 
     if (cart.userId.toString() !== req.userId) {
