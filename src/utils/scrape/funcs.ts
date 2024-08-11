@@ -2,6 +2,7 @@ import { ElementHandle } from "puppeteer";
 import {
   CategoryProductI,
   ScrapedProductCategoriesOptions,
+  SuperMarketImgsI,
   SuperMarketPricesI,
 } from "../../types/scrape/scraping.types";
 import { ProductI } from "../../types/scrape/products.types";
@@ -52,7 +53,9 @@ export async function addScrapedProductToCurrentCategory(
   itemHandle: ElementHandle<Element>,
   scrapedProducts: CategoryProductI[],
   nameSelector: string,
-  priceSelector: string
+  priceSelector: string,
+  scrapedImgs?: string[],
+  imageSelector?: string
 ) {
   const name = await itemHandle.$eval(
     nameSelector,
@@ -62,6 +65,14 @@ export async function addScrapedProductToCurrentCategory(
     priceSelector,
     (el) => el.textContent?.trim() || "N/A"
   );
+  if (imageSelector && scrapedImgs) {
+    const imgUrl = await itemHandle.$eval(
+      imageSelector,
+      (el) => el.getAttribute("src") || "N/A"
+    );
+    console.log(imgUrl);
+    scrapedImgs.push(imgUrl);
+  }
   console.log(name + " : " + price);
 
   if (name && price) {
@@ -74,7 +85,8 @@ export async function addScrapedProductToCurrentCategory(
 export function adjustDataByIndex(
   data1: SuperMarketPricesI,
   data2: SuperMarketPricesI,
-  data3: SuperMarketPricesI
+  data3: SuperMarketPricesI,
+  imgs: SuperMarketImgsI
 ) {
   const adjustedData: ProductI[] = [];
   for (const key in data1) {
@@ -82,6 +94,7 @@ export function adjustDataByIndex(
     for (let i = 0; i < data1[categoryKey].length; i++) {
       const adjustedProduct: ProductI = {
         name: data1[categoryKey][i].name,
+        img: imgs[categoryKey][i],
         category: defineCategory(categoryKey),
         prices: [
           {
@@ -106,14 +119,24 @@ export function adjustDataByIndex(
 export async function writeOrderReq() {
   try {
     const ramiLevyData = await ramiLevyScrape();
-    const shufersalData = await shufersalScrape();
+    const { shufersalPrices: shufersalData, shufersalImgs } =
+      await shufersalScrape();
+    console.log(shufersalImgs);
     const yohananofData = await yohananofScrape();
     console.log(
-      "Please translate all te hebrew to english and convert all the sub prices to numbers (omit symbols or chars if needed)"
+      "Please translate all the hebrew to english and convert all the sub prices to numbers (omit symbols or chars if needed, if null then insert -1). Also I want you to add one line description key for each "
     );
-    console.dir(adjustDataByIndex(shufersalData, yohananofData, ramiLevyData), {
-      depth: null,
-    });
+    console.dir(
+      adjustDataByIndex(
+        shufersalData,
+        yohananofData,
+        ramiLevyData,
+        shufersalImgs
+      ),
+      {
+        depth: null,
+      }
+    );
   } catch (error) {
     console.log(error);
   }

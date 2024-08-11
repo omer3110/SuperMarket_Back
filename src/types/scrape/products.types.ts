@@ -13,6 +13,7 @@ export type ProductCategory =
 
 export interface ProductI {
   name: string;
+  img: string;
   category: ProductCategory;
   prices: ProductPriceElementI[];
 }

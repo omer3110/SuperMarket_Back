@@ -11,10 +11,11 @@ const CompanyProductSchema = new Schema({
 });
 
 const ProductSchema = new Schema({
-  // img - url
   // description - string
   name: { type: String, required: true },
+  img: { type: String, required: true },
   prices: { type: [CompanyProductSchema], required: true },
 });
 
 const ProductModel = mongoose.model("Product", ProductSchema);
+export default ProductModel;
