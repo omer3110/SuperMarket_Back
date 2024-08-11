@@ -7,7 +7,6 @@ import {
   deleteCart,
   addCollaborator, // Import the addCollaborator controller
 } from "../controllers/cart.controller";
-import { verifyToken } from "../middlewares/auth.middleware";
 import { authorizeCartOwner } from "../middlewares/auth.middleware"; // Import the authorizeCartOwner middleware
 
 const router = Router();

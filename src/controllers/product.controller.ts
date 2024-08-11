@@ -3,11 +3,13 @@ import { getErrorData } from "../utils/errors/ErrorsFunctions";
 import ProductModel from "../models/product.model";
 
 export async function getProducts(req: Request, res: Response) {
-  console.log(1);
+  const { category } = req.query;
+  const queryCategory = category || "Milk and Eggs";
 
-  //   const { userId } = req;
   try {
-    const products = await ProductModel.find();
+    const products = await ProductModel.find({
+      category: queryCategory,
+    });
     res.status(200).json(products);
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
