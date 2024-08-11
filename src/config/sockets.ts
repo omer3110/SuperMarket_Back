@@ -24,7 +24,12 @@ export async function checkUserRoom(userId: string) {
     return room;
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
-    console.log("addCollaborator error: ", errorName, errorMessage);
+    if (errorName === "CastError") {
+      console.log("User has no room");
+
+      return null;
+    }
+    console.log("checkUserRoom error: ", errorName, errorMessage);
   }
 }
 
