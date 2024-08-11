@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import UserModel, { CartProduct } from "../models/user.model";
+import UserModel from "../models/user.model";
 import { Types } from "mongoose";
+import { CartProductI } from "../types/userTypes";
 
 // Extend the Express Request interface within this file
 interface CustomRequest extends Request {
@@ -27,7 +28,10 @@ export const addProductToCurrentCart = async (
   req: CustomRequest,
   res: Response
 ) => {
-  const { productId, quantity } = req.body;
+  const { productId, productName, quantity } = req.body;
+  if (!productId || !productName || !quantity) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
 
   try {
     const user = await UserModel.findById(req.userId);
@@ -43,7 +47,11 @@ export const addProductToCurrentCart = async (
     if (productIndex > -1) {
       user.currentCart[productIndex].quantity += quantity;
     } else {
-      user.currentCart.push({ productId, quantity });
+      user.currentCart.push({
+        productId,
+        productName,
+        quantity,
+      } as CartProductI);
     }
 
     await user.save();
@@ -89,7 +97,8 @@ export const deleteProductFromCurrentCart = async (
   req: CustomRequest,
   res: Response
 ) => {
-  const { productId } = req.body;
+  const { productId } = req.params;
+  console.log(productId);
 
   try {
     const user = await UserModel.findById(req.userId);
@@ -98,7 +107,7 @@ export const deleteProductFromCurrentCart = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.currentCart.pull({ productId } as CartProduct);
+    user.currentCart.pull({ productId } as CartProductI);
 
     await user.save();
 
@@ -117,7 +126,7 @@ export const clearCurrentCart = async (req: CustomRequest, res: Response) => {
     }
 
     // Clear the current cart by setting it to an empty Types.Array<CartProduct>
-    user.currentCart = new Types.Array<CartProduct>();
+    user.currentCart = new Types.Array<CartProductI>();
 
     await user.save();
 
