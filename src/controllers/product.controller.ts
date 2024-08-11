@@ -17,3 +17,20 @@ export async function getProducts(req: Request, res: Response) {
     res.status(500).json("Server error getting all reviews");
   }
 }
+
+export async function getProductById(req: Request, res: Response) {
+  const { id } = req.params;
+  try {
+    const product = await ProductModel.findById(id);
+
+    if (!product) {
+      return res.status(404).json("Product not found");
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    const { errorMessage, errorName } = getErrorData(error);
+    console.log(errorName, errorMessage);
+    res.status(500).json("Server error getting all reviews");
+  }
+}
