@@ -16,6 +16,8 @@ router.patch("/current-cart/increment/:productId", incrementProductQuantity);
 // Route to delete a product from the current cart
 router.patch("/current-cart/decrement/:productId", decrementProductQuantity);
 
+router.delete("/current-cart/:productId", clearCurrentCart);
+
 // Route to clear all products from the current cart
 router.delete("/current-cart/clear", clearCurrentCart);
 
