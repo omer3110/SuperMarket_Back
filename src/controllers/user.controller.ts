@@ -2,30 +2,10 @@ import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import { Types } from "mongoose";
 import { CartProductI } from "../types/userTypes";
+import { AuthRequest } from "../types/auth.types";
 
-// Extend the Express Request interface within this file
-interface CustomRequest extends Request {
-  userId?: string;
-}
-
-// export const getUserById = async (req: CustomRequest, res: Response) => {
-//   const { userId } = req;
-
-//   try {
-//     const user = await UserModel.findById(userId).select("-password");
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     res.json(user);
-//   } catch (err: any) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
-// Controller to add product to current cart
 export const addProductToCurrentCart = async (
-  req: CustomRequest,
+  req: AuthRequest,
   res: Response
 ) => {
   const { productId, productName, quantity } = req.body;
@@ -64,13 +44,13 @@ export const addProductToCurrentCart = async (
 
 // Controller to update product quantity in current cart
 export const updateProductQuantityInCurrentCart = async (
-  req: CustomRequest,
+  req: AuthRequest,
   res: Response
 ) => {
   const { productId, quantity } = req.body;
 
   try {
-    const user = await UserModel.findById(req.userId);
+    const user = await UserModel.findByIdAndUpdate(req.userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -94,7 +74,7 @@ export const updateProductQuantityInCurrentCart = async (
 
 // Controller to delete product from current cart
 export const deleteProductFromCurrentCart = async (
-  req: CustomRequest,
+  req: AuthRequest,
   res: Response
 ) => {
   const { productId } = req.params;
@@ -117,7 +97,7 @@ export const deleteProductFromCurrentCart = async (
   }
 };
 // Controller to clear all products from the current cart
-export const clearCurrentCart = async (req: CustomRequest, res: Response) => {
+export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findById(req.userId);
 
