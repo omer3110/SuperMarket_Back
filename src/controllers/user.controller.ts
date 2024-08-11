@@ -1,7 +1,8 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { getErrorData } from "../utils/errors/ErrorsFunctions";
 
 // Extend the Express Request interface within this file
 interface CustomRequest extends Request {
@@ -48,7 +49,6 @@ export const register = async (req: Request, res: Response) => {
 // Controller to handle user login
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body; // Accept username and password from the request body
-
   try {
     // Find the user by username
     const user = await UserModel.findOne({ username });
@@ -66,10 +66,11 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "1h",
     });
-
-    res.json({ token, user });
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+    res.status(200).json({ token, user });
+  } catch (err) {
+    const { errorMessage, errorName } = getErrorData(err);
+    console.log(errorName, errorMessage);
+    res.status(500).json({ message: errorMessage });
   }
 };
 

@@ -6,6 +6,8 @@ import connectDB from "./config/db";
 // import productRoutes from "./routes/product.route"; // Use import for routes
 import userRoutes from "./routes/user.route"; // Use import for routes
 import cartRoutes from "./routes/cart.route"; // Import cart routes
+import { verifyToken } from "./middlewares/auth.middleware";
+import productsRouter from "./routes/product.route";
 
 dotenv.config();
 
@@ -30,12 +32,13 @@ async function main() {
   // ROUTES
   // app.use("/api/product", productRoutes);
   app.use("/api/auth", userRoutes);
-  app.use("/api/cart", cartRoutes); // Use cart routes
+  app.use("/api/products", productsRouter);
+  app.use("/api/cart", verifyToken, cartRoutes); // Use cart routes
 
   // Fallback route for handling all other requests
-  app.get("*", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-  });
+  // app.get("*", (req: Request, res: Response) => {
+  //   res.sendFile(path.join(__dirname, "public", "index.html"));
+  // });
 
   // START SERVER
   app.listen(PORT, () => {
