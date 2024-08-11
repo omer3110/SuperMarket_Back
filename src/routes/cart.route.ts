@@ -21,7 +21,7 @@ router.get("/", getUserCarts);
 router.get("/:cartId", getCartById);
 
 // Route to update a cart by ID
-router.put("/:cartId", authorizeCartOwner, updateCart);
+router.patch("/:cartId", authorizeCartOwner, updateCart);
 
 // Route to delete a cart by ID
 router.delete("/:cartId", authorizeCartOwner, deleteCart);

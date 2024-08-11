@@ -7,21 +7,20 @@ interface CustomRequest extends Request {
   userId?: string;
 }
 
-// Controller to get user by ID
-export const getUserById = async (req: CustomRequest, res: Response) => {
-  const { userId } = req;
+// export const getUserById = async (req: CustomRequest, res: Response) => {
+//   const { userId } = req;
 
-  try {
-    const user = await UserModel.findById(userId).select("-password");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+//   try {
+//     const user = await UserModel.findById(userId).select("-password");
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
 
-    res.json(user);
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
-  }
-};
+//     res.json(user);
+//   } catch (err: any) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
 // Controller to add product to current cart
 export const addProductToCurrentCart = async (
@@ -99,7 +98,6 @@ export const deleteProductFromCurrentCart = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Use Mongoose's `pull` method to remove the product from the currentCart array
     user.currentCart.pull({ productId } as CartProduct);
 
     await user.save();

@@ -10,7 +10,7 @@ interface CartProduct {
 interface Cart extends Document {
   name: string;
   userId: Types.ObjectId;
-  collaborators?: Types.Array<Types.ObjectId>; // Optional collaborators field
+  collaborators?: Types.Array<Types.ObjectId>;
   cartProducts: Types.Array<CartProduct>;
 }
 
@@ -29,11 +29,16 @@ const cartSchema = new Schema<Cart>({
     {
       type: Schema.Types.ObjectId,
       ref: "User",
+      default: [],
     },
   ],
   cartProducts: [
     {
       productId: {
+        type: String,
+        required: true,
+      },
+      productName: {
         type: String,
         required: true,
       },

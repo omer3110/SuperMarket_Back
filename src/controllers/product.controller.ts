@@ -37,7 +37,9 @@ export async function getProductById(req: Request, res: Response) {
 
 export async function getProductByName(req: Request, res: Response) {
   const { productName } = req.body;
-  console.log(productName);
+  if (!productName) {
+    res.status(200).json([]);
+  }
 
   try {
     const products = await ProductModel.find(
@@ -50,7 +52,6 @@ export async function getProductByName(req: Request, res: Response) {
     if (!products) {
       return res.status(404).json("Product not found");
     }
-
     res.status(200).json(products);
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
