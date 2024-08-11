@@ -11,14 +11,14 @@ export const createCart = async (req: AuthRequest, res: Response) => {
   try {
     const newCart = new CartModel({
       name,
-      userId: req.userId, // Now TypeScript will recognize userId on req
+      userId: req.userId,
       collaborators,
       cartProducts,
     });
 
     await newCart.save();
 
-    res.status(201).json(newCart);
+    return res.status(201).json(newCart);
   } catch (err) {
     const { errorMessage, errorName } = getErrorData(err);
     res.status(500).json({ message: errorMessage });
@@ -70,7 +70,7 @@ export const getUserCarts = async (req: AuthRequest, res: Response) => {
 };
 
 // Controller to get a specific cart by ID
-export const getCartById = async (req: Request, res: Response) => {
+export const getCartById = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
 
   try {
