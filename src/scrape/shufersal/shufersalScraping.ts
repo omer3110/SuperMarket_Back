@@ -3,6 +3,7 @@ import SHUFERSAL_CATEGORIES from "./shufersal.constatns"; // SHUFERSAL_MILK_AND_
 import {
   CategoryProductI,
   SuperMarketCategoriesI,
+  SuperMarketImgsI,
   SuperMarketPricesI,
 } from "../../types/scrape/scraping.types";
 import { getErrorData } from "../../utils/errors/ErrorsFunctions";
@@ -10,6 +11,14 @@ import { addScrapedProductToCurrentCategory } from "../../utils/scrape/funcs";
 
 export async function shufersalScrape() {
   const shufersalPrices: SuperMarketPricesI = {
+    MILK_AND_EGGS_CATEGORY: [],
+    FRUITS_AND_VEGETABLES_CATEGORY: [],
+    SWEETS_CATEGORY: [],
+    DRINKS_CATEGORY: [],
+    MEAST_AND_FISH_CATEGORY: [],
+    FROZENS_CATEGORY: [],
+  };
+  const shufersalImgs: SuperMarketImgsI = {
     MILK_AND_EGGS_CATEGORY: [],
     FRUITS_AND_VEGETABLES_CATEGORY: [],
     SWEETS_CATEGORY: [],
@@ -28,6 +37,7 @@ export async function shufersalScrape() {
     for (const key in SHUFERSAL_CATEGORIES) {
       const categoryKey = key as keyof SuperMarketCategoriesI;
       const scrapedProducts: CategoryProductI[] = [];
+      const scrapedImgs: string[] = [];
       for (const productToScrape of SHUFERSAL_CATEGORIES[categoryKey]) {
         try {
           await page.locator("#js-site-search-input").fill(productToScrape);
@@ -41,7 +51,9 @@ export async function shufersalScrape() {
               itemHandle,
               scrapedProducts,
               ".text",
-              ".totalPrice .number"
+              ".totalPrice .number",
+              scrapedImgs,
+              "a.imgContainer img"
             );
           } else {
             console.log("No product found.");
@@ -56,11 +68,12 @@ export async function shufersalScrape() {
           scrapedProducts.push({ name: productToScrape, price: "N/A" });
         }
       }
+      shufersalImgs[categoryKey] = scrapedImgs;
       shufersalPrices[categoryKey] = scrapedProducts;
     }
 
     await browser.close();
-    return shufersalPrices;
+    return { shufersalPrices, shufersalImgs };
   } catch (error) {
     const { errorName, errorMessage } = getErrorData(error);
     console.log(errorName, "\n" + errorMessage);
