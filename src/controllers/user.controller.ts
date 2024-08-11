@@ -70,7 +70,6 @@ export const addProductToCurrentCart = async (
   }
 };
 
-// Controller to update product quantity in current cart
 export const incrementProductQuantity = async (
   req: AuthRequest,
   res: Response
@@ -96,7 +95,6 @@ export const incrementProductQuantity = async (
   }
 };
 
-// Controller to delete product from current cart
 export const decrementProductQuantity = async (
   req: AuthRequest,
   res: Response
@@ -104,9 +102,49 @@ export const decrementProductQuantity = async (
   const { productId } = req.params;
 
   try {
-    const user = await UserModel.findOneAndUpdate(
+    let user = await UserModel.findOneAndUpdate(
       { _id: req.userId, "currentCart.productId": productId },
       { $inc: { "currentCart.$.quantity": -1 } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User cart with that product ID not found" });
+    }
+
+    const product = user.currentCart.find((item) => {
+      return item.productId === productId;
+    });
+    if (product && product.quantity < 1) {
+      user = await UserModel.findOneAndUpdate(
+        { _id: req.userId },
+        { $pull: { currentCart: { productId } } },
+        { new: true }
+      );
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "User not found after removing product" });
+      }
+    }
+
+    res.status(200).json(user.currentCart);
+  } catch (error) {
+    const { errorMessage, errorName } = getErrorData(error);
+    console.log(errorName, errorMessage);
+    res.status(500).json({ message: errorMessage });
+  }
+};
+
+export async function removeProductFromCart(req: AuthRequest, res: Response) {
+  const { productId } = req.params;
+
+  try {
+    const user = await UserModel.findOneAndUpdate(
+      { _id: req.userId },
+      { $pull: { currentCart: { productId } } },
       { new: true }
     );
 
@@ -120,8 +158,8 @@ export const decrementProductQuantity = async (
     console.log(errorName, errorMessage);
     res.status(500).json({ message: errorMessage });
   }
-};
-// Controller to clear all products from the current cart
+}
+
 export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
   try {
     const user = await UserModel.findById(req.userId);
@@ -130,7 +168,6 @@ export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Clear the current cart by setting it to an empty Types.Array<CartProduct>
     user.currentCart = new Types.Array<CartProductI>();
 
     await user.save();
@@ -143,12 +180,12 @@ export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getCartComparison = async (req: AuthRequest, res: Response) => {
-  try {
-    // const products =
-  } catch (error) {
-    const { errorMessage, errorName } = getErrorData(error);
-    console.log(errorName, errorMessage);
-    res.status(500).json({ message: errorMessage });
-  }
-};
+// export const getCartComparison = async (req: AuthRequest, res: Response) => {
+//   try {
+//     // const products =
+//   } catch (error) {
+//     const { errorMessage, errorName } = getErrorData(error);
+//     console.log(errorName, errorMessage);
+//     res.status(500).json({ message: errorMessage });
+//   }
+// };
