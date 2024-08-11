@@ -37,7 +37,8 @@ export async function getProductById(req: Request, res: Response) {
 
 export async function getProductByName(req: Request, res: Response) {
   const { productName } = req.body;
-  console.log(productName);
+  
+
 
   try {
     const products = await ProductModel.find(
