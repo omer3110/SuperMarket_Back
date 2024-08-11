@@ -9,6 +9,11 @@ export const createCart = async (req: AuthRequest, res: Response) => {
   const { name, cartProducts, collaborators } = req.body;
 
   try {
+    const cart = await CartModel.findOne({ name, userId: req.userId });
+    if (cart) {
+      return res.status(400).json({ message: "Cart Name already exists" });
+    }
+
     const newCart = new CartModel({
       name,
       userId: req.userId,
@@ -21,7 +26,11 @@ export const createCart = async (req: AuthRequest, res: Response) => {
     return res.status(201).json(newCart);
   } catch (err) {
     const { errorMessage, errorName } = getErrorData(err);
-    res.status(500).json({ message: errorMessage });
+    console.log(" createCart : error", errorName), errorMessage;
+    if (errorName === "ValidationError") {
+      return res.status(400).json({ message: errorMessage });
+    }
+    res.status(500).json({ message: "internal Error" });
   }
 };
 
@@ -41,7 +50,6 @@ export const addCollaborator = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    // Check if the user is already a collaborator
     if (cart.collaborators?.includes(user._id)) {
       return res
         .status(400)
@@ -71,10 +79,10 @@ export const getUserCarts = async (req: AuthRequest, res: Response) => {
 
 // Controller to get a specific cart by ID
 export const getCartById = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params;
+  const { cartId } = req.params;
 
   try {
-    const cart = await CartModel.findById(id);
+    const cart = await CartModel.findById(cartId);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
@@ -88,11 +96,11 @@ export const getCartById = async (req: AuthRequest, res: Response) => {
 
 // Controller to update a cart
 export const updateCart = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params;
+  const { cartId } = req.params;
   const { name, cartProducts, collaborators } = req.body;
 
   try {
-    const cart = await CartModel.findById(id);
+    const cart = await CartModel.findById(cartId);
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }

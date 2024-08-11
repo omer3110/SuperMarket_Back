@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 // Define the CartProduct interface
 export interface CartProduct {
   productId: string;
+  productName: string;
   quantity: number;
 }
 
@@ -56,6 +57,10 @@ const userSchema = new Schema<User>({
           type: String,
           required: true,
         },
+        productName: {
+          type: String,
+          required: true,
+        },
         quantity: {
           type: Number,
           required: true,
@@ -67,7 +72,6 @@ const userSchema = new Schema<User>({
   },
 });
 
-// Pre-save middleware to hash the password before saving it
 userSchema.pre("save", async function (next) {
   const user = this as User;
 
@@ -84,7 +88,6 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// Method to compare the password during login
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {

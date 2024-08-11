@@ -4,32 +4,30 @@ import Cart from "../models/cart.model";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
 import { AuthRequest } from "../types/auth.types";
 
-// Extract JWT_SECRET from environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-// Middleware to verify the JWT token
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
-  // Get the authorization header (it could be a string or an array of strings)
-  const authHeader = req.headers["authorization"] as
-    | string
-    | string[]
-    | undefined;
-
-  // Ensure authHeader is a string before calling split
-  const token =
-    authHeader && typeof authHeader === "string"
-      ? authHeader.split(" ")[1]
-      : null;
-
+  const authHeader = req.header("Authorization") || req.header("authorization");
+  const token = authHeader?.replace("Bearer ", "");
   if (!token) {
-    console.log("auth.middleware, verifyToken. No token provided");
-    return res.status(401).json({ error: "Access denied" });
+    console.log(`auth.middleware: no token provided`);
+    return res.status(401).json("Access denied");
   }
 
+  // const authHeader = req.headers["authorization"] as
+  //   | string
+  //   | string[]
+  //   | undefined;
+
+  // const token =
+  //   authHeader && typeof authHeader === "string"
+  //     ? authHeader.split(" ")[1]
+  //     : null;
+
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload; // Verify token and cast to JwtPayload
-    (req as AuthRequest).userId = decoded.userId; // Add userId to request object
-    next(); // Call next middleware
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    (req as AuthRequest).userId = decoded.userId;
+    next();
   } catch (error) {
     console.log(
       "auth.middleware, verifyToken. Error while verifying token",

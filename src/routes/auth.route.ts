@@ -8,12 +8,8 @@ import { verifyToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-// Route to handle user registration
-router.post("/register", register);
-
-// Route to handle user login
-router.post("/login", login);
-
 router.get("/loggedInUser", verifyToken, getLoggedInUser);
+router.post("/register", register);
+router.post("/login", login);
 
 export default router;

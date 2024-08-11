@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-  getUserById,
   addProductToCurrentCart,
   updateProductQuantityInCurrentCart,
   deleteProductFromCurrentCart,
@@ -8,10 +7,6 @@ import {
 } from "../controllers/user.controller";
 
 const router = Router();
-
-// Route to get user by ID
-router.get("/:id", getUserById);
-
 // Route to add a product to the current cart
 router.post("/current-cart/add", addProductToCurrentCart);
 
