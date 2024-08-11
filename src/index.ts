@@ -8,10 +8,10 @@ import authRoutes from "./routes/auth.route"; // Auth routes
 import cartRoutes from "./routes/cart.route"; // Cart routes
 import productRoutes from "./routes/product.route"; // Product routes
 import { verifyToken } from "./middlewares/auth.middleware";
+import { app, server } from "./config/sockets";
 
 dotenv.config();
 
-const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 async function main() {
@@ -24,9 +24,10 @@ async function main() {
 
   // allow CORS for local development (for production, you should configure it properly)
   app.use(
-    cors({
-      origin: "http://localhost:5173",
-    })
+    cors()
+    // cors({
+    //   origin: "http://localhost:5173",
+    // })
   );
 
   // ROUTES
@@ -35,13 +36,8 @@ async function main() {
   app.use("/api/products", productRoutes); // Use product routes
   app.use("/api/cart", verifyToken, cartRoutes); // Use cart routes
 
-  // Fallback route for handling all other requests
-  // app.get("*", (req: Request, res: Response) => {
-  //   res.sendFile(path.join(__dirname, "public", "index.html"));
-  // });
-
   // START SERVER
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });
 }
