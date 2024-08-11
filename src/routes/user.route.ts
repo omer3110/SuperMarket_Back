@@ -1,9 +1,10 @@
 import { Router } from "express";
 import {
   addProductToCurrentCart,
-  updateProductQuantityInCurrentCart,
-  deleteProductFromCurrentCart,
+  decrementProductQuantity,
   clearCurrentCart,
+  incrementProductQuantity,
+  getCartComparison,
 } from "../controllers/user.controller";
 
 const router = Router();
@@ -11,11 +12,13 @@ const router = Router();
 router.post("/current-cart", addProductToCurrentCart);
 
 // Route to update the quantity of a product in the current cart
-router.patch("/current-cart", updateProductQuantityInCurrentCart);
+router.patch("/current-cart/increment/:productId", incrementProductQuantity);
 
 // Route to delete a product from the current cart
-router.patch("/current-cart/delete/:productId", deleteProductFromCurrentCart);
+router.patch("/current-cart/decrement/:productId", decrementProductQuantity);
 
 // Route to clear all products from the current cart
 router.delete("/current-cart/clear", clearCurrentCart);
+router.get("/current-cart/comprasion", getCartComparison);
+
 export default router;

@@ -51,28 +51,6 @@ const userSchema = new Schema<UserI>({
   },
 });
 
-userSchema.pre("save", async function (next) {
-  const user = this as UserI;
-
-  if (!user.isModified("password")) {
-    return next();
-  }
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
-    next();
-  } catch (err: any) {
-    next(err);
-  }
-});
-
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
 // Export the User model
 const UserModel = model<UserI>("User", userSchema);
 export default UserModel;

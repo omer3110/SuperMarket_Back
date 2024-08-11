@@ -1,42 +1,47 @@
 import { Request, Response } from "express";
 import UserModel from "../models/user.model";
 import jwt from "jsonwebtoken";
-import mongoose, { get } from "mongoose";
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
 import { AuthRequest } from "../types/auth.types";
+import { config } from "dotenv";
 
 // Extract JWT_SECRET from environment variables
+config();
 const JWT_SECRET = process.env.JWT_SECRET as string;
+const SALT_ROUNDS = 10;
 
 // Controller to handle user registration
 export const register = async (req: Request, res: Response) => {
   const { firstName, lastName, email, username, address, password } = req.body;
 
   try {
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     const newUser = new UserModel({
+      email,
+      password: hashedPassword,
+      username,
       firstName,
       lastName,
-      email,
-      username,
       address,
-      password,
     });
-
     await newUser.save();
-
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
       expiresIn: "4h",
     });
 
     res.status(201).json({ token, user: newUser });
-  } catch (err) {
-    const { errorMessage, errorName } = getErrorData(err);
-    console.log("Register error: ", errorName + "\n" + errorMessage);
-
-    if (err instanceof mongoose.mongo.MongoServerError && err.code === 11000) {
-      return res.status(400).json("User already exists");
+  } catch (error) {
+    const { errorMessage, errorName } = getErrorData(error);
+    console.log("register", errorName, errorMessage);
+    if ((error as any).code === 11000) {
+      const duplicateField = Object.keys((error as any).keyPattern)[0];
+      const message = `The ${duplicateField} is already taken.`;
+      console.log(message);
+      return res.status(400).json({ message });
     }
-    res.status(500).json({ message: "Internal Error" });
+    res.status(500).json({ message: "Registration failed" });
   }
 };
 
@@ -47,21 +52,23 @@ export const login = async (req: Request, res: Response) => {
   try {
     const user = await UserModel.findOne({ username });
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Authentication failed" });
     }
-    
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ message: "Authentication failed" });
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: "4h",
+      expiresIn: "5h",
     });
 
     res.status(200).json({ token });
-  } catch (err: any) {
-    res.status(500).json({ message: err.message });
+  } catch (error) {
+    const { errorMessage, errorName } = getErrorData(error);
+    console.log("login", errorName, errorMessage);
+    res.status(500).json({ message: "Login failed" });
   }
 };
 
@@ -81,7 +88,7 @@ export const getLoggedInUser = async (req: AuthRequest, res: Response) => {
       address: user.address,
       currentCart: user.currentCart,
     });
-  } catch (err: any) {
+  } catch (err) {
     const { errorMessage, errorName } = getErrorData(err);
     console.log("Login error: ", errorName + "\n" + errorMessage);
     res.status(500).json({ message: "Internal Error" });
