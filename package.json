@@ -6,7 +6,8 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "ts-node-dev src/index.ts",
-    "seed": "ts-node src/seed.ts"
+    "seed": "ts-node src/seed.ts",
+    "seedProducts": "ts-node src/automation.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

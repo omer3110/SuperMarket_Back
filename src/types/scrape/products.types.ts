@@ -16,3 +16,4 @@ export interface ProductI {
   category: ProductCategory;
   prices: ProductPriceElementI[];
 }
+
