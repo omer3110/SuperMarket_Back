@@ -49,19 +49,22 @@ const userSchema = new Schema<User>({
     type: String,
     required: true,
   },
-  currentCart: [
-    {
-      productId: {
-        type: String,
-        required: true,
+  currentCart: {
+    type: [
+      {
+        productId: {
+          type: String,
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          default: 1,
+        },
       },
-      quantity: {
-        type: Number,
-        required: true,
-        default: 1,
-      },
-    },
-  ],
+    ],
+    default: [],
+  },
 });
 
 // Pre-save middleware to hash the password before saving it
