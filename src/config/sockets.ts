@@ -12,6 +12,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log(`index: connected`, socket.id);
+  
   socket.on("disconnect", () => {
     console.log(`index: disconnected`, socket.id);
   });

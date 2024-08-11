@@ -3,6 +3,7 @@ import { AuthRequest } from "../types/auth.types";
 import RoomModel from "../models/rooms.model";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
 import UserModel from "../models/user.model";
+import { io } from "../config/sockets";
 
 export async function verifyCollaborator(userId: string, roomId: string) {
   const room = await RoomModel.findOne({ roomId, collaborators: userId });
@@ -185,6 +186,7 @@ export async function deleteRoom(req: AuthRequest, res: Response) {
     }
 
     await RoomModel.deleteOne({ roomId });
+    io.in(roomId).disconnectSockets();
     res.status(200).json({ message: "Room deleted" });
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
