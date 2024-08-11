@@ -3,6 +3,9 @@ import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
+// import productRoutes from "./routes/product.route"; // Use import for routes
+import userRoutes from "./routes/user.route"; // Use import for routes
+import cartRoutes from "./routes/cart.route"; // Import cart routes
 
 dotenv.config();
 
@@ -14,7 +17,6 @@ async function main() {
   await connectDB();
 
   // MIDDLEWARES
-  // parse json body in request (for POST, PUT, PATCH requests)
   app.use(express.json());
   app.use(express.static("public"));
 
@@ -25,12 +27,10 @@ async function main() {
     })
   );
 
-  // // ROUTES
-  // const productRoutes = require("./routes/product.route");
+  // ROUTES
   // app.use("/api/product", productRoutes);
-
-  // const userRoutes = require("./routes/user.route");
-  // app.use("/api/user", userRoutes);
+  app.use("/api/auth", userRoutes);
+  app.use("/api/cart", cartRoutes); // Use cart routes
 
   // Fallback route for handling all other requests
   app.get("*", (req: Request, res: Response) => {
