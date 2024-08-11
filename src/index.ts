@@ -25,12 +25,12 @@ async function main() {
     })
   );
 
-  // ROUTES
-  const productRoutes = require("./routes/products.route");
-  app.use("/api/product", productRoutes);
+  // // ROUTES
+  // const productRoutes = require("./routes/product.route");
+  // app.use("/api/product", productRoutes);
 
-  const authRoutes = require("./routes/auth.route");
-  app.use("/api/auth", authRoutes);
+  // const userRoutes = require("./routes/user.route");
+  // app.use("/api/user", userRoutes);
 
   // Fallback route for handling all other requests
   app.get("*", (req: Request, res: Response) => {
