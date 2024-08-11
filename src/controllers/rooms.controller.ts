@@ -78,7 +78,7 @@ export async function addCollaborator(req: AuthRequest, res: Response) {
 export async function getUserRooms(req: AuthRequest, res: Response) {
   try {
     const rooms = await RoomModel.findOne({
-      admin: req.userId || { collaborators: req.userId },
+      $or: [{ admin: req.userId }, { collaborators: req.userId }],
     });
     res.status(200).json(rooms);
   } catch (error) {
