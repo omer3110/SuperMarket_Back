@@ -8,13 +8,13 @@ import {
   updateQuantity,
 } from "../controllers/rooms.controller";
 
-const roomsRouter = Router();
+const roomsRoutes = Router();
 
-roomsRouter.get("/", getUserRooms);
-roomsRouter.post("/", createRoom);
-roomsRouter.delete("/:roomId", deleteRoom);
-roomsRouter.post("/add-collaborator/:roomId", addCollaborator);
-roomsRouter.patch(":roomdId/quantity/:productId", updateQuantity);
-roomsRouter.patch("/:roomId/toggle/:productId", toggleProduct);
+roomsRoutes.get("/", getUserRooms);
+roomsRoutes.post("/", createRoom);
+roomsRoutes.delete("/:roomId", deleteRoom);
+roomsRoutes.post("/add-collaborator/:roomId", addCollaborator);
+roomsRoutes.patch(":roomdId/quantity/:productId", updateQuantity);
+roomsRoutes.patch("/:roomId/toggle/:productId", toggleProduct);
 
-export default roomsRouter;
+export default roomsRoutes;
