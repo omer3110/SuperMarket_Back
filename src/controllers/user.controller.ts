@@ -9,10 +9,10 @@ interface CustomRequest extends Request {
 
 // Controller to get user by ID
 export const getUserById = async (req: CustomRequest, res: Response) => {
-  const { id } = req.params;
+  const { userId } = req;
 
   try {
-    const user = await UserModel.findById(id).select("-password");
+    const user = await UserModel.findById(userId).select("-password");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
