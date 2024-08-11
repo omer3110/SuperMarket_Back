@@ -1,20 +1,13 @@
+import { ProductsCategoriesOptions } from "../products.types";
+
 export interface ProductPriceElementI {
   brandName: string;
   price: number | null | string;
 }
 
-export type ProductCategory =
-  | "Milk and Eggs"
-  | "Fruits and Vegetables"
-  | "Sweets"
-  | "Drinks"
-  | "Meat and Fish"
-  | "Frozens";
-
-export interface ProductI {
+export interface ProductToSeedI {
   name: string;
   img: string;
-  category: ProductCategory;
+  category: ProductsCategoriesOptions;
   prices: ProductPriceElementI[];
 }
-

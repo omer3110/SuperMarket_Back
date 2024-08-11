@@ -5,10 +5,10 @@ import {
   SuperMarketImgsI,
   SuperMarketPricesI,
 } from "../../types/scrape/scraping.types";
-import { ProductI } from "../../types/scrape/products.types";
 import { ramiLevyScrape } from "../../scrape/rami_levi/rami_levyScraping";
 import { shufersalScrape } from "../../scrape/shufersal/shufersalScraping";
 import { yohananofScrape } from "../../scrape/yohannanof/yohananofScraping";
+import { ProductToSeedI } from "../../types/scrape/products.types";
 
 export function reverseString(str: string) {
   return str.split("").reverse().join("");
@@ -88,11 +88,11 @@ export function adjustDataByIndex(
   data3: SuperMarketPricesI,
   imgs: SuperMarketImgsI
 ) {
-  const adjustedData: ProductI[] = [];
+  const adjustedData: ProductToSeedI[] = [];
   for (const key in data1) {
     const categoryKey = key as ScrapedProductCategoriesOptions;
     for (let i = 0; i < data1[categoryKey].length; i++) {
-      const adjustedProduct: ProductI = {
+      const adjustedProduct: ProductToSeedI = {
         name: data1[categoryKey][i].name,
         img: imgs[categoryKey][i],
         category: defineCategory(categoryKey),

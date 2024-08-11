@@ -1,7 +1,16 @@
 import mongoose, { Schema } from "mongoose";
-import { BRANDS_NAMES } from "../types/products.types";
+import {
+  BrandsOptions,
+  CompanyProductI,
+  ProductI,
+  ProductsCategoriesOptions,
+} from "../types/products.types";
+import {
+  BRANDS_NAMES,
+  PRODUCTS_CATEGORIES,
+} from "../constants/products.constants";
 
-const CompanyProductSchema = new Schema({
+const CompanyProductSchema = new Schema<CompanyProductI>({
   brandName: {
     type: String,
     required: true,
@@ -10,9 +19,9 @@ const CompanyProductSchema = new Schema({
   price: { type: Number, required: true },
 });
 
-const ProductSchema = new Schema({
-  // description - string
+const ProductSchema = new Schema<ProductI>({
   name: { type: String, required: true },
+  category: { type: String, required: true, enum: PRODUCTS_CATEGORIES },
   img: { type: String, required: true },
   prices: { type: [CompanyProductSchema], required: true },
 });

@@ -26,5 +26,5 @@ const seedProducts = async () => {
   }
 };
 
-// writeOrderReq();
-seedProducts();
+writeOrderReq();
+// seedProducts();
