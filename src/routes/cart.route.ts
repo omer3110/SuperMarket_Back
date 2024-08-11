@@ -13,26 +13,21 @@ import { authorizeCartOwner } from "../middlewares/auth.middleware"; // Import t
 const router = Router();
 
 // Route to create a new cart
-router.post("/", verifyToken, createCart);
+router.post("/", createCart);
 
 // Route to get all carts of the current user
-router.get("/", verifyToken, getUserCarts);
+router.get("/", getUserCarts);
 
 // Route to get a specific cart by ID
-router.get("/:cartId", verifyToken, getCartById);
+router.get("/:cartId", getCartById);
 
 // Route to update a cart by ID
-router.put("/:cartId", verifyToken, authorizeCartOwner, updateCart);
+router.put("/:cartId", authorizeCartOwner, updateCart);
 
 // Route to delete a cart by ID
-router.delete("/:cartId", verifyToken, authorizeCartOwner, deleteCart);
+router.delete("/:cartId", authorizeCartOwner, deleteCart);
 
 // Route to add a collaborator to a cart
-router.post(
-  "/:cartId/collaborators",
-  verifyToken,
-  authorizeCartOwner,
-  addCollaborator
-);
+router.post("/:cartId/collaborators", authorizeCartOwner, addCollaborator);
 
 export default router;
