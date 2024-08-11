@@ -1,29 +1,8 @@
 import { Schema, model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
+import { UserI } from "../types/userTypes";
 
-// Define the CartProduct interface
-export interface CartProduct {
-  productId: string;
-  productName: string;
-  quantity: number;
-}
-
-// Define the User interface extending Mongoose's Document
-interface User extends Document {
-  _id: Types.ObjectId;
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  address: string;
-  password: string;
-  currentCart: Types.Array<CartProduct>;
-
-  comparePassword(candidatePassword: string): Promise<boolean>;
-}
-
-// Define the User Schema
-const userSchema = new Schema<User>({
+const userSchema = new Schema<UserI>({
   firstName: {
     type: String,
     required: true,
@@ -72,28 +51,28 @@ const userSchema = new Schema<User>({
   },
 });
 
-userSchema.pre("save", async function (next) {
-  const user = this as User;
+// userSchema.pre("save", async function (next) {
+//   const user = this as User;
 
-  if (!user.isModified("password")) {
-    return next();
-  }
+//   if (!user.isModified("password")) {
+//     return next();
+//   }
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
-    next();
-  } catch (err: any) {
-    next(err);
-  }
-});
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     user.password = await bcrypt.hash(user.password, salt);
+//     next();
+//   } catch (err: any) {
+//     next(err);
+//   }
+// });
 
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+// userSchema.methods.comparePassword = async function (
+//   candidatePassword: string
+// ): Promise<boolean> {
+//   return bcrypt.compare(candidatePassword, this.password);
+// };
 
 // Export the User model
-const UserModel = model<User>("User", userSchema);
+const UserModel = model<UserI>("User", userSchema);
 export default UserModel;
