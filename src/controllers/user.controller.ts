@@ -160,15 +160,18 @@ export async function removeProductFromCart(req: AuthRequest, res: Response) {
   }
 }
 
-export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
+export async function clearCurrentCart(req: AuthRequest, res: Response) {
   try {
+    console.log(1);
+
     const user = await UserModel.findById(req.userId);
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.currentCart = new Types.Array<CartProductI>();
+    user.currentCart = [];
 
     await user.save();
 
@@ -178,7 +181,7 @@ export const clearCurrentCart = async (req: AuthRequest, res: Response) => {
     console.log(errorName, errorMessage);
     res.status(500).json({ message: errorMessage });
   }
-};
+}
 
 // export const getCartComparison = async (req: AuthRequest, res: Response) => {
 //   try {
