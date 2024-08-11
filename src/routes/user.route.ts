@@ -4,7 +4,6 @@ import {
   decrementProductQuantity,
   clearCurrentCart,
   incrementProductQuantity,
-  getCartComparison,
 } from "../controllers/user.controller";
 
 const router = Router();
@@ -19,6 +18,5 @@ router.patch("/current-cart/decrement/:productId", decrementProductQuantity);
 
 // Route to clear all products from the current cart
 router.delete("/current-cart/clear", clearCurrentCart);
-router.get("/current-cart/comprasion", getCartComparison);
 
 export default router;

@@ -10,7 +10,7 @@ import {
   PRODUCTS_CATEGORIES,
 } from "../constants/products.constants";
 
-const CompanyProductSchema = new Schema<CompanyProductI>({
+export const CompanyProductSchema = new Schema<CompanyProductI>({
   brandName: {
     type: String,
     required: true,

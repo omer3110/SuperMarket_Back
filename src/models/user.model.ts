@@ -1,6 +1,7 @@
 import { Schema, model, Document, Types } from "mongoose";
 import bcrypt from "bcrypt";
 import { UserI } from "../types/userTypes";
+import { CompanyProductSchema } from "./product.model";
 
 const userSchema = new Schema<UserI>({
   firstName: {
@@ -38,6 +39,10 @@ const userSchema = new Schema<UserI>({
         },
         productName: {
           type: String,
+          required: true,
+        },
+        productPrices: {
+          type: [CompanyProductSchema],
           required: true,
         },
         quantity: {

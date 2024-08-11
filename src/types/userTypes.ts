@@ -1,8 +1,10 @@
 import { Document, Types } from "mongoose";
+import { CompanyProductI } from "./products.types";
 
 export interface CartProductI {
   productId: string;
   productName: string;
+  productPrices: CompanyProductI[];
   quantity: number;
 }
 
@@ -14,7 +16,7 @@ export interface UserI extends Document {
   username: string;
   address: string;
   password: string;
-  currentCart: Types.Array<CartProductI>;
+  currentCart: CartProductI[];
 
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
