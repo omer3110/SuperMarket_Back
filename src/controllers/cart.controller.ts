@@ -4,16 +4,17 @@ import UserModel from "../models/user.model";
 import { AuthRequest } from "../types/auth.types";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
 
-// Controller to create a new cart
 export const createCart = async (req: AuthRequest, res: Response) => {
   const { name, cartProducts, collaborators } = req.body;
 
   try {
+    // Check if a cart with the same name already exists for the user
     const cart = await CartModel.findOne({ name, userId: req.userId });
     if (cart) {
       return res.status(400).json({ message: "Cart Name already exists" });
     }
 
+    // Create a new cart with the provided data
     const newCart = new CartModel({
       name,
       userId: req.userId,
@@ -21,16 +22,18 @@ export const createCart = async (req: AuthRequest, res: Response) => {
       cartProducts,
     });
 
+    // Save the new cart to the database
     await newCart.save();
 
+    // Return the newly created cart
     return res.status(201).json(newCart);
   } catch (err) {
     const { errorMessage, errorName } = getErrorData(err);
-    console.log(" createCart : error", errorName), errorMessage;
+    console.error("createCart: error", errorName, errorMessage);
     if (errorName === "ValidationError") {
       return res.status(400).json({ message: errorMessage });
     }
-    res.status(500).json({ message: "internal Error" });
+    res.status(500).json({ message: "Internal Error" });
   }
 };
 
