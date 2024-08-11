@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Cart from "../models/cart.model";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
+import { AuthRequest } from "../types/auth.types";
 
 // Extract JWT_SECRET from environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -27,7 +28,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload; // Verify token and cast to JwtPayload
-    req.userId = decoded.userId; // Add userId to request object
+    (req as AuthRequest).userId = decoded.userId; // Add userId to request object
     next(); // Call next middleware
   } catch (error) {
     console.log(
@@ -56,7 +57,7 @@ export const authorizeCartOwner = async (
         .json({ message: `Cart with id ${cartId} not found` });
     }
 
-    if (cart.userId.toString() !== req.userId) {
+    if (cart.userId.toString() !== (req as AuthRequest).userId) {
       return res
         .status(403)
         .json({ message: "You do not have permission to access this cart" });
@@ -69,9 +70,9 @@ export const authorizeCartOwner = async (
   }
 };
 
-// Extend the Request interface to include userId
-declare module "express-serve-static-core" {
-  interface Request {
-    userId?: string;
-  }
-}
+// // Extend the Request interface to include userId
+// declare module "express-serve-static-core" {
+//   interface Request {
+//     userId?: string;
+//   }
+// }
