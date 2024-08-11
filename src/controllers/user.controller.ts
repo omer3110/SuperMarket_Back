@@ -3,6 +3,11 @@ import UserModel from "../models/user.model";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+// Extend the Express Request interface within this file
+interface CustomRequest extends Request {
+  userId?: string;
+}
+
 // Extract JWT_SECRET from environment variables
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -83,3 +88,93 @@ export const getUserById = async (req: Request, res: Response) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// Controller to add product to current cart
+export const addProductToCurrentCart = async (
+  req: CustomRequest,
+  res: Response
+) => {
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await UserModel.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const productIndex = user.currentCart.findIndex(
+      (item) => item.productId === productId
+    );
+
+    if (productIndex > -1) {
+      // Product exists in cart, update quantity
+      user.currentCart[productIndex].quantity += quantity;
+    } else {
+      // Add new product to cart
+      user.currentCart.push({ productId, quantity });
+    }
+
+    await user.save();
+
+    res.status(200).json(user.currentCart);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Controller to update product quantity in current cart
+export const updateProductQuantityInCurrentCart = async (
+  req: CustomRequest,
+  res: Response
+) => {
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await UserModel.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const productIndex = user.currentCart.findIndex(
+      (item) => item.productId === productId
+    );
+
+    if (productIndex > -1) {
+      // Update the quantity of the product
+      user.currentCart[productIndex].quantity = quantity;
+      await user.save();
+      res.status(200).json(user.currentCart);
+    } else {
+      res.status(404).json({ message: "Product not found in cart" });
+    }
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Controller to delete product from current cart
+// export const deleteProductFromCurrentCart = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   const { productId } = req.body;
+
+//   try {
+//     const user = await UserModel.findById(req.userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Use Mongoose's `pull` method to remove the product from the currentCart
+//     user.currentCart.pull({ productId });
+
+//     await user.save();
+
+//     res.status(200).json(user.currentCart);
+//   } catch (err: any) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
