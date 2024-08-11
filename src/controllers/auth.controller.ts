@@ -55,7 +55,32 @@ export const login = async (req: Request, res: Response) => {
       expiresIn: "4h",
     });
 
-    res.json({ token, user });
+    res.json({
+      token,
+      user: { _id: user._id, username: user.username },
+    });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Controller to get the logged-in user's data
+export const getLoggedInUser = async (req: Request, res: Response) => {
+  try {
+    const user = await UserModel.findById((req as any).userId).select(
+      "-password"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      address: user.address,
+    });
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }
