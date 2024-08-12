@@ -4,6 +4,7 @@ import RoomModel from "../models/rooms.model";
 import { getErrorData } from "../utils/errors/ErrorsFunctions";
 import UserModel from "../models/user.model";
 import { io } from "../config/sockets";
+import ProductModel from "../models/product.model";
 
 export async function verifyCollaborator(userId: string, roomId: string) {
   const room = await RoomModel.findOne({ roomId, collaborators: userId });
@@ -77,10 +78,10 @@ export async function addCollaborator(req: AuthRequest, res: Response) {
 
 export async function getUserRooms(req: AuthRequest, res: Response) {
   try {
-    const rooms = await RoomModel.findOne({
+    const room = await RoomModel.findOne({
       $or: [{ admin: req.userId }, { collaborators: req.userId }],
     });
-    res.status(200).json(rooms);
+    res.status(200).json(room);
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
     console.log("addCollaborator error: ", errorName, errorMessage);
@@ -188,6 +189,38 @@ export async function deleteRoom(req: AuthRequest, res: Response) {
     await RoomModel.deleteOne({ roomId });
     io.in(roomId).disconnectSockets();
     res.status(200).json({ message: "Room deleted" });
+  } catch (error) {
+    const { errorMessage, errorName } = getErrorData(error);
+    console.log("deleteRoom error: ", errorName, errorMessage);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function addProduct(req: AuthRequest, res: Response) {
+  const { userId } = req;
+  const { roomId, productId } = req.params;
+  try {
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+    const adjustedProduct = {
+      isActive: true,
+      quantity: 1,
+      productName: product.name,
+      productId: product._id,
+    };
+    const room = await RoomModel.findOneAndUpdate(
+      { roomId },
+      {
+        $push: { todoCart: adjustedProduct },
+      },
+      { new: true }
+    );
+    if (!room) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+    res.status(200).json(room);
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
     console.log("deleteRoom error: ", errorName, errorMessage);

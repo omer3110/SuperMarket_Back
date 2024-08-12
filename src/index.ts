@@ -9,6 +9,7 @@ import cartRoutes from "./routes/cart.route"; // Cart routes
 import productRoutes from "./routes/product.route"; // Product routes
 import { verifyToken } from "./middlewares/auth.middleware";
 import { app, server } from "./config/sockets";
+import roomsRoutes from "./routes/rooms.routes";
 
 app.use(express.static("public"));
 
@@ -39,6 +40,7 @@ async function main() {
   app.use("/api/user", verifyToken, userRoutes); // Use user routes
   app.use("/api/products", productRoutes); // Use product routes
   app.use("/api/cart", verifyToken, cartRoutes); // Use cart routes
+  app.use("/api/rooms", verifyToken, roomsRoutes); // Use rooms routes
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));

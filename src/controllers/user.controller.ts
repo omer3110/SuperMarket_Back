@@ -162,10 +162,7 @@ export async function removeProductFromCart(req: AuthRequest, res: Response) {
 
 export async function clearCurrentCart(req: AuthRequest, res: Response) {
   try {
-    console.log(1);
-
     const user = await UserModel.findById(req.userId);
-    console.log(user);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

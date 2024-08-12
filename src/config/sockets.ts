@@ -25,8 +25,6 @@ export async function checkUserRoom(userId: string) {
   } catch (error) {
     const { errorMessage, errorName } = getErrorData(error);
     if (errorName === "CastError") {
-      console.log("User has no room");
-
       return null;
     }
     console.log("checkUserRoom error: ", errorName, errorMessage);
@@ -34,22 +32,33 @@ export async function checkUserRoom(userId: string) {
 }
 
 io.on("connection", (socket: CustomSocket) => {
-  console.log(`index: connected`, socket.id);
-
   socket.on("login", async (userId: string) => {
     socket.userId = userId;
-    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
+    console.log(`User ${userId} logged in `);
     const userRoom = await checkUserRoom(userId);
     if (userRoom) {
       socket.join(userRoom.roomId);
-      io.to(userRoom.roomId).emit("New user joined", userId);
+      io.to(userRoom.roomId).emit("New user joined", userRoom);
+      console.log(`new User joined room ${userRoom.roomId}`);
+    } else {
+      console.log("User has no room");
+    }
+  });
+
+  socket.on("create_room", async (userId: string) => {
+    console.log(`Room created`);
+    const userRoom = await checkUserRoom(userId);
+    if (userRoom) {
+      socket.join(userRoom.roomId);
+      io.to(userRoom.roomId).emit("New user joined", userRoom);
+      console.log(`User ${userId} joined room ${userRoom.roomId}`);
     } else {
       console.log("User has no room");
     }
   });
 
   socket.on("disconnect", () => {
-    console.log(`index: disconnected`, socket.id);
+    // console.log(`index: disconnected`, socket.id);
   });
 });
 
