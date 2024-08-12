@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+// import path from "path";
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = __importDefault(require("./config/db"));
@@ -13,6 +14,9 @@ const cart_route_1 = __importDefault(require("./routes/cart.route")); // Cart ro
 const product_route_1 = __importDefault(require("./routes/product.route")); // Product routes
 const auth_middleware_1 = require("./middlewares/auth.middleware");
 const sockets_1 = require("./config/sockets");
+const rooms_routes_1 = __importDefault(require("./routes/rooms.routes"));
+sockets_1.app.use(express_1.default.static("public"));
+const path = require("path");
 dotenv_1.default.config();
 const PORT = process.env.PORT || 3000;
 async function main() {
@@ -32,6 +36,10 @@ async function main() {
     sockets_1.app.use("/api/user", auth_middleware_1.verifyToken, user_route_1.default); // Use user routes
     sockets_1.app.use("/api/products", product_route_1.default); // Use product routes
     sockets_1.app.use("/api/cart", auth_middleware_1.verifyToken, cart_route_1.default); // Use cart routes
+    sockets_1.app.use("/api/rooms", auth_middleware_1.verifyToken, rooms_routes_1.default); // Use rooms routes
+    sockets_1.app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
     // START SERVER
     sockets_1.server.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);

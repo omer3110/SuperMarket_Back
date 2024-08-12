@@ -124,9 +124,7 @@ async function removeProductFromCart(req, res) {
 }
 async function clearCurrentCart(req, res) {
     try {
-        console.log(1);
         const user = await user_model_1.default.findById(req.userId);
-        console.log(user);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

@@ -11,10 +11,12 @@ exports.getUserRooms = getUserRooms;
 exports.toggleProduct = toggleProduct;
 exports.updateQuantity = updateQuantity;
 exports.deleteRoom = deleteRoom;
+exports.addProduct = addProduct;
 const rooms_model_1 = __importDefault(require("../models/rooms.model"));
 const ErrorsFunctions_1 = require("../utils/errors/ErrorsFunctions");
 const user_model_1 = __importDefault(require("../models/user.model"));
 const sockets_1 = require("../config/sockets");
+const product_model_1 = __importDefault(require("../models/product.model"));
 async function verifyCollaborator(userId, roomId) {
     const room = await rooms_model_1.default.findOne({ roomId, collaborators: userId });
     return room ? true : false;
@@ -79,10 +81,10 @@ async function addCollaborator(req, res) {
 }
 async function getUserRooms(req, res) {
     try {
-        const rooms = await rooms_model_1.default.findOne({
+        const room = await rooms_model_1.default.findOne({
             $or: [{ admin: req.userId }, { collaborators: req.userId }],
         });
-        res.status(200).json(rooms);
+        res.status(200).json(room);
     }
     catch (error) {
         const { errorMessage, errorName } = (0, ErrorsFunctions_1.getErrorData)(error);
@@ -168,6 +170,34 @@ async function deleteRoom(req, res) {
         await rooms_model_1.default.deleteOne({ roomId });
         sockets_1.io.in(roomId).disconnectSockets();
         res.status(200).json({ message: "Room deleted" });
+    }
+    catch (error) {
+        const { errorMessage, errorName } = (0, ErrorsFunctions_1.getErrorData)(error);
+        console.log("deleteRoom error: ", errorName, errorMessage);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+async function addProduct(req, res) {
+    const { userId } = req;
+    const { roomId, productId } = req.params;
+    try {
+        const product = await product_model_1.default.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        const adjustedProduct = {
+            isActive: true,
+            quantity: 1,
+            productName: product.name,
+            productId: product._id,
+        };
+        const room = await rooms_model_1.default.findOneAndUpdate({ roomId }, {
+            $push: { todoCart: adjustedProduct },
+        }, { new: true });
+        if (!room) {
+            return res.status(404).json({ message: "Room not found" });
+        }
+        res.status(200).json(room);
     }
     catch (error) {
         const { errorMessage, errorName } = (0, ErrorsFunctions_1.getErrorData)(error);
