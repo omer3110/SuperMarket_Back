@@ -1,4 +1,5 @@
 import express, { Application, Request, Response } from "express";
+// import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db";
@@ -9,6 +10,10 @@ import productRoutes from "./routes/product.route"; // Product routes
 import { verifyToken } from "./middlewares/auth.middleware";
 import { app, server } from "./config/sockets";
 import roomsRoutes from "./routes/rooms.routes";
+
+app.use(express.static("public"));
+
+const path = require("path");
 
 dotenv.config();
 
@@ -36,6 +41,10 @@ async function main() {
   app.use("/api/products", productRoutes); // Use product routes
   app.use("/api/cart", verifyToken, cartRoutes); // Use cart routes
   app.use("/api/rooms", verifyToken, roomsRoutes); // Use rooms routes
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+  });
 
   // START SERVER
   server.listen(PORT, () => {
