@@ -118,11 +118,11 @@ export function adjustDataByIndex(
 }
 export async function writeOrderReq() {
   try {
-    const ramiLevyData = await ramiLevyScrape();
     const { shufersalPrices: shufersalData, shufersalImgs } =
       await shufersalScrape();
     console.log(shufersalImgs);
     const yohananofData = await yohananofScrape();
+    const ramiLevyData = await ramiLevyScrape();
     console.log(
       "Please translate all the hebrew to english and convert all the sub prices to numbers (omit symbols or chars if needed, if null then insert -1). Also I want you to add one line description key for each "
     );
